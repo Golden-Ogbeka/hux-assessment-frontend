@@ -23,7 +23,9 @@ const config: Config = {
         success: '#059669',
         error: '#DC2626',
       },
-
+      borderColor: {
+        error: '#DC2626',
+      },
       fontFamily: {
         primary: ['var(--font-primary)'],
         secondary: ['var(--font-mulish)'],

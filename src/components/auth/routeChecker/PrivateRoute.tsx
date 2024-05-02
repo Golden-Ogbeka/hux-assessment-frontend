@@ -1,7 +1,7 @@
 'use client';
 
 import { sendFeedback } from '@/functions/feedback';
-import { getSessionDetails } from '@/functions/userSession';
+import { getUserSession } from '@/functions/userSession';
 
 import { updateUser } from '@/store/features/user';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -14,14 +14,17 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    const sessionDetails = getSessionDetails();
-    if (user || sessionDetails) {
-      dispatch(updateUser({ user: user || (sessionDetails as UserType) }));
-    } else {
-      sendFeedback('Login to continue', 'error');
+    const checkSession = () => {
+      const sessionDetails = getUserSession();
+      if (user || sessionDetails) {
+        dispatch(updateUser({ user: user || (sessionDetails as UserType) }));
+      } else {
+        sendFeedback('Login to continue', 'error');
 
-      redirect('/auth/login');
-    }
+        redirect('/');
+      }
+    };
+    checkSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

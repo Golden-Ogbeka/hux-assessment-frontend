@@ -22,7 +22,7 @@ const Navbar = () => {
     <nav className='w-full bg-white shadow-md h-20'>
       <div className='w-full items-center flex justify-between px-primary h-full'>
         {/* Logo */}
-        <Link href='/' className='text-3xl font-extrabold'>
+        <Link href={user ? '/user/contacts' : '/'} className='text-3xl font-extrabold'>
           Contact
         </Link>
 

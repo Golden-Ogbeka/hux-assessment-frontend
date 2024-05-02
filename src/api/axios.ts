@@ -1,12 +1,10 @@
-import { API_URL } from '@/functions/environmentVariables';
-import { API_KEY } from './../functions/environmentVariables';
-import { getTokenDetails } from './../functions/userSession';
-// import { getSessionDetails } from '@/functions/userSession';
+import { API_KEY, API_URL } from '@/functions/environmentVariables';
 import { store } from '@/store';
 import { signOut } from '@/store/features/user';
 import axios from 'axios';
+import { getUserSession } from './../functions/userSession';
 
-const sessionToken = getTokenDetails();
+const sessionDetails = getUserSession();
 
 export const appAxios = axios.create({
   headers: {
@@ -19,13 +17,13 @@ export const appAxios = axios.create({
 appAxios.interceptors.request.use(
   (config) => {
     const appState = store.getState();
-    const storeToken = appState?.user.token;
+    const storeUserDetails = appState?.user?.user;
     // get state is called here to be current at the time of rendering
 
-    const token = storeToken || sessionToken;
+    const token = storeUserDetails?.token || sessionDetails?.token;
 
     if (token) {
-      config.headers.Authorization = 'Bearer ' + token;
+      config.headers.Authorization = `${token}`;
     }
 
     return config;
@@ -48,17 +46,11 @@ appAxios.interceptors.response.use(
       err.response.data.errors[0].msg &&
       possibleErrors.includes(err.response.data.errors[0].msg) // if one of the possible errors is sent
     ) {
-      if (
-        err.response.status === 401 &&
-        sessionToken // logout only when a user has session
-      ) {
-        // Log user out
-        store.dispatch(signOut());
-
-        // Reload window so user is redirected to login
-        window.location.reload();
-      }
+      // Once token is cleared, reload and app would be redirected to login
+      store.dispatch(signOut());
+      window.location.href = '/';
     }
+
     return Promise.reject(err);
   }
 );
