@@ -5,7 +5,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar />
-      <main className='min-h-screen p-10 px-primary'>{children}</main>
+      <main className='py-20 px-primary'>{children}</main>
     </div>
   );
 };

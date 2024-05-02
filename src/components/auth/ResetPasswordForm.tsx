@@ -1,26 +1,28 @@
 'use client';
 
-import React from 'react';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useParams, useRouter } from 'next/navigation';
-import LabelInput from '@/common/LabelInput';
-import Button from '@/common/Button/Button';
-import { sendCatchFeedback, sendFeedback } from '@/functions/feedback';
 import { appAxios } from '@/api/axios';
+import Button from '@/common/Button/Button';
+import LabelInput from '@/common/LabelInput';
+import { sendCatchFeedback, sendFeedback } from '@/functions/feedback';
+import { useFormik } from 'formik';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
+import * as yup from 'yup';
 
 const ResetPasswordForm = () => {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
 
-  const param = useParams();
+  const param = useSearchParams();
+  const searchEmail = param.get('email');
+  const searchCode = param.get('verificationCode');
 
   const formik = useFormik({
     initialValues: {
-      // email: decodeURIComponent(param?.email as string),
+      email: searchEmail,
       password: '',
       confirmPassword: '',
-      verificationCode: '',
+      verificationCode: searchCode,
     },
     onSubmit: () => {
       submitValues();
@@ -39,30 +41,15 @@ const ResetPasswordForm = () => {
   const submitValues = async () => {
     try {
       setLoading(true);
-      const response = await appAxios.post('/auth/reset-password', {
-        // email: formik.values.email,
-        password: formik.values.password,
-        confirmPassword: formik.values.confirmPassword,
-        token: formik.values.verificationCode,
+      const response = await appAxios.post('/user/reset-password/update', {
+        email: formik.values.email,
+        newPassword: formik.values.password,
+        verificationCode: formik.values.verificationCode,
       });
       sendFeedback(response.data?.message, 'success');
       formik.resetForm();
 
       router.push('/auth/login');
-    } catch (error: any) {
-      sendCatchFeedback(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sendVerificationCode = async () => {
-    try {
-      setLoading(true);
-      const response = await appAxios.post('/auth/resend-code', {
-        email: param?.email,
-      });
-      sendFeedback(response.data?.message, 'success');
     } catch (error: any) {
       sendCatchFeedback(error);
     } finally {
@@ -77,14 +64,14 @@ const ResetPasswordForm = () => {
         Enter your new password and the verification code you received in your email
       </p>
       <form onSubmit={formik.handleSubmit} className='w-full'>
-        {/* <LabelInput
+        <LabelInput
           formik={formik}
           name='email'
           label='Email'
           type='email'
           className='mb-8'
           disabled
-        /> */}
+        />
         <LabelInput
           formik={formik}
           name='password'
@@ -103,20 +90,9 @@ const ResetPasswordForm = () => {
           formik={formik}
           name='verificationCode'
           label='Verification Code'
-          className='mb-[22px]'
+          className='mb-[66px]'
         />
-        <div className='mb-[66px]'>
-          <span className='text-sm font-normal '>
-            Didn&apos;t receive a verification code?{' '}
-            <button
-              className='text-primary font-semibold'
-              type='button'
-              onClick={sendVerificationCode}
-            >
-              Resend
-            </button>
-          </span>
-        </div>
+
         <Button type='submit' loading={loading} className='w-full'>
           Reset Password
         </Button>

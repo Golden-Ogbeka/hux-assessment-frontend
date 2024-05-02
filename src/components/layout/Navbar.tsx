@@ -1,7 +1,7 @@
 'use client';
 
 import Button from '@/common/Button/Button';
-import { sendCatchFeedback } from '@/functions/feedback';
+import { sendFeedback } from '@/functions/feedback';
 import { signOut } from '@/store/features/user';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import Link from 'next/link';
@@ -13,12 +13,9 @@ const Navbar = () => {
   const router = useRouter();
 
   const logoutUser = () => {
-    try {
-      dispatch(signOut());
-      router.push('/');
-    } catch (error) {
-      sendCatchFeedback(error);
-    }
+    dispatch(signOut());
+    router.push('/');
+    sendFeedback('User signed out', 'success');
   };
 
   return (

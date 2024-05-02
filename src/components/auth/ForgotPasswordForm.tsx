@@ -28,12 +28,11 @@ const ForgotPasswordForm = () => {
   const submitValues = async () => {
     try {
       setLoading(true);
-      const response = await appAxios.post('/auth/forgot-password', {
+      const response = await appAxios.post('/user/reset-password', {
         email: formik.values.email,
       });
       sendFeedback(response.data?.message, 'success');
-      formik.resetForm();
-      router.push(`/auth/reset-password`);
+      router.push(`/auth/reset-password/?email=${formik.values.email}`);
     } catch (error: any) {
       sendCatchFeedback(error);
     } finally {

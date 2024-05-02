@@ -18,11 +18,7 @@ const RegisterForm = () => {
     initialValues: {
       email: '',
       password: '',
-      firstName: '',
-      lastName: '',
-      acceptTermsAndConditions: false,
-      userName: '',
-      referralCode: '',
+      fullName: '',
     },
     onSubmit: () => {
       submitValues();
@@ -30,30 +26,21 @@ const RegisterForm = () => {
     validationSchema: yup.object({
       email: yup.string().email('Enter a valid email').required('Email is required'),
       password: yup.string().required('Password is required'),
-      firstName: yup.string().required('First name is required'),
-      lastName: yup.string().required('Last name is required'),
-      acceptTermsAndConditions: yup
-        .bool()
-        .oneOf([true], 'Please accept the Terms and Conditions to continue'),
-      userName: yup.string().required('Username is required'),
+      fullName: yup.string().required('Full name is required'),
     }),
     enableReinitialize: true,
   });
   const submitValues = async () => {
     try {
       setLoading(true);
-      const response = await appAxios.post('/auth/register', {
+      const response = await appAxios.post('/user/register', {
         email: formik.values.email,
         password: formik.values.password,
-        firstName: formik.values.firstName,
-        lastName: formik.values.lastName,
-        acceptTermsAndConditions: formik.values.acceptTermsAndConditions,
-        userName: formik.values.userName,
-        referralCode: formik.values.referralCode,
+        fullName: formik.values.fullName,
       });
       sendFeedback(response.data?.message, 'success');
       formik.resetForm();
-      return router.push('/auth/verify-email');
+      return router.push('/auth/login');
     } catch (error: any) {
       sendCatchFeedback(error);
     } finally {
@@ -66,23 +53,12 @@ const RegisterForm = () => {
       <h1 className='font-semibold text-2xl md:text-[32px] mb-1'>Create an account</h1>
       <div className='mb-10 text-[#828282] font-medium'>Let&apos;s get started</div>
       <form onSubmit={formik.handleSubmit} className='w-full '>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
-          <LabelInput formik={formik} name='firstName' label='First Name' />
-          <LabelInput formik={formik} name='lastName' label='Last Name' />
-        </div>
-        <LabelInput formik={formik} name='userName' label='Username' className='mb-6' />
-
+        <LabelInput formik={formik} name='fullName' label='Full Name' className='mb-6' />
         <LabelInput
           formik={formik}
           name='email'
           label='Email'
           type='email'
-          className='mb-6'
-        />
-        <LabelInput
-          formik={formik}
-          name='referralCode'
-          label='Referral Code(if any)'
           className='mb-6'
         />
         <LabelInput
