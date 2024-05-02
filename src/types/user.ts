@@ -4,4 +4,5 @@ export type UserType = {
   fullName: string;
   createdAt: string;
   updatedAt: string;
+  token: string;
 };

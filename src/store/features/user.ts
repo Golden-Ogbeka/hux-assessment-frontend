@@ -1,11 +1,6 @@
-import {
-  removeSessionDetails,
-  removeTokenDetails,
-  storeSessionDetails,
-  storeTokenDetails,
-} from './../../functions/userSession';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserType } from '../../types/user';
+import { removeSessionDetails, storeSessionDetails } from './../../functions/userSession';
 
 // Define a type for the slice state
 
@@ -24,20 +19,15 @@ export const userSlice = createSlice({
       state.user = action.payload.user;
       storeSessionDetails(action.payload.user);
     },
-    updateToken(state, action: PayloadAction<{ token: string }>) {
-      state.token = action.payload.token;
-      storeTokenDetails(action.payload.token);
-    },
 
     signOut(state) {
       state.user = null;
       state.token = null;
       removeSessionDetails();
-      removeTokenDetails();
     },
   },
 });
 
-export const { updateUser, signOut, updateToken } = userSlice.actions;
+export const { updateUser, signOut } = userSlice.actions;
 
 export default userSlice.reducer;

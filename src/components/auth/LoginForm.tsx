@@ -4,9 +4,8 @@ import { appAxios } from '@/api/axios';
 import Button from '@/common/Button/Button';
 import LabelInput from '@/common/LabelInput';
 import { sendCatchFeedback, sendFeedback } from '@/functions/feedback';
-import { updateToken, updateUser } from '@/store/features/user';
+import { updateUser } from '@/store/features/user';
 import { useAppDispatch } from '@/store/hooks';
-import { UserType } from '@/types/user';
 import { useFormik } from 'formik';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -38,11 +37,10 @@ const LoginForm = () => {
         email: formik.values.email,
         password: formik.values.password,
       });
-      const userToken = response.data?.token;
-      dispatch(updateToken({ token: userToken }));
-
-      const accountInfo: UserType = response.data?.user;
-      dispatch(updateUser({ user: accountInfo }));
+      // Set app state
+      dispatch(
+        updateUser({ user: { ...response.data?.user, token: response.data?.token } })
+      );
 
       sendFeedback(response.data?.message, 'success');
       formik.resetForm();
