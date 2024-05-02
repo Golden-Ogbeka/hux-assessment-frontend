@@ -3,31 +3,131 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --primary: #1d4ed8;
+  --secondary: #f0ac27;
+  --white: #ffffff;
+  --black: #000000;
+  --accent: #f3edfc;
+  --accent-light: #dfbff554;
+  --success: '#059669';
+  --error: '#DC2626';
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--black);
+  scroll-behavior: smooth;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Input styles */
+.inputContainer {
+  display: flex;
+  gap: 7px;
+  flex-direction: column;
+  position: relative;
+}
+
+.inputContainer > label {
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #64748b;
+}
+
+.inputContainer > label > span {
+  font-weight: 500;
+  font-size: 14px;
+  /* identical to box height, or 200% */
+
+  color: #64748b;
+}
+
+.formContainer > h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 59.87px;
+  /* margin-bottom: 9px; */
+}
+
+.inputContainer > * input,
+textarea {
+  padding: 12px;
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  border: 1px solid #d0d5dd;
+  border-radius: 5px;
+  width: 100%;
+  color: var(--black);
+}
+
+.inputContainer > * input::placeholder,
+textarea::placeholder {
+  color: #b8c0cc;
+}
+
+.inputContainer > * input:focus,
+textarea:focus {
+  outline: 1px solid var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+}
+
+.inputError {
+  border: 1px solid #ef4444 !important;
+}
+
+.error {
+  color: #ef4444;
+  text-align: left !important;
+  font-size: 0.75rem;
+}
+
+.error::first-letter {
+  text-transform: uppercase;
+}
+
+.errorText {
+  color: #ef4444;
+}
+
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 1000px) {
+  .inputContainer > label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .inputContainer > label > span {
+    font-size: 16px;
+  }
+
+  .formContainer > h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 39.87px;
+    /* margin-bottom: 9px; */
+  }
+
+  .floatingInputContainer > label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .floatingInputContainer > label > span {
+    font-size: 16px;
   }
 }
