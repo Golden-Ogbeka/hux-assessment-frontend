@@ -1,17 +1,17 @@
 'use client';
 
-import React from 'react';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useAppDispatch } from '@/store/hooks';
-import { useRouter } from 'next/navigation';
-import LabelInput from '@/common/LabelInput';
-import Button from '@/common/Button/Button';
-import Link from 'next/link';
 import { appAxios } from '@/api/axios';
-import { signOut, updateToken, updateUser } from '@/store/features/user';
+import Button from '@/common/Button/Button';
+import LabelInput from '@/common/LabelInput';
 import { sendCatchFeedback, sendFeedback } from '@/functions/feedback';
+import { updateToken, updateUser } from '@/store/features/user';
+import { useAppDispatch } from '@/store/hooks';
 import { UserType } from '@/types/user';
+import { useFormik } from 'formik';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
+import * as yup from 'yup';
 
 const LoginForm = () => {
   const dispatch = useAppDispatch();
@@ -34,43 +34,19 @@ const LoginForm = () => {
   const submitValues = async () => {
     try {
       setLoading(true);
-      const response = await appAxios.post('/auth/login', {
+      const response = await appAxios.post('/user/login', {
         email: formik.values.email,
         password: formik.values.password,
       });
-      const userToken = response.data?.data;
+      const userToken = response.data?.token;
       dispatch(updateToken({ token: userToken }));
 
-      const accountResponse = await appAxios.get('/auth/profile');
-      const accountInfo: UserType = accountResponse.data.data;
+      const accountInfo: UserType = response.data?.user;
       dispatch(updateUser({ user: accountInfo }));
-
-      // Check if account is verified
-      if (!accountInfo.isVerified) {
-        // Sign the user out so they can verify their email first
-        dispatch(signOut());
-
-        // Send verification code
-        sendFeedback('Verify your account to continue', 'info');
-        await appAxios.post('/auth/resend-code', {
-          email: accountInfo.email,
-        });
-        return router.push('/auth/verify-email');
-      }
-
-      // Check if any of the account info is missing
-      if (!accountInfo.goal || !accountInfo.school || !accountInfo.guardianFullName) {
-        return router.push('/auth/account-info');
-      }
-
-      // Check if subscription is running
-      if (!accountInfo.subscription?.running) {
-        return router.push('/dashboard/account/?tab=2');
-      }
 
       sendFeedback(response.data?.message, 'success');
       formik.resetForm();
-      return router.push('/dashboard/home');
+      return router.push('/user/contacts');
     } catch (error: any) {
       sendCatchFeedback(error);
     } finally {

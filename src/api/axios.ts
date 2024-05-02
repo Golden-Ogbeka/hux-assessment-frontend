@@ -1,5 +1,5 @@
 import { API_URL } from '@/functions/environmentVariables';
-import { sendFeedback } from '@/functions/feedback';
+import { API_KEY } from './../functions/environmentVariables';
 import { getTokenDetails } from './../functions/userSession';
 // import { getSessionDetails } from '@/functions/userSession';
 import { store } from '@/store';
@@ -11,6 +11,7 @@ const sessionToken = getTokenDetails();
 export const appAxios = axios.create({
   headers: {
     'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
   },
   baseURL: API_URL,
 });
@@ -39,12 +40,13 @@ appAxios.interceptors.response.use(
     return res;
   },
   async (err) => {
-    const originalConfig = err.config;
-
+    // Current expired token setup
+    const possibleErrors = ['Login to continue!', 'jwt expired'];
+    // If user's token is invalid, this message would be received.
     if (
-      // urls to avoid (don't logout when they fail)
-      originalConfig.url !== `${API_URL}/auth/login` && //login
-      err.response
+      err.response?.data?.errors &&
+      err.response.data.errors[0].msg &&
+      possibleErrors.includes(err.response.data.errors[0].msg) // if one of the possible errors is sent
     ) {
       if (
         err.response.status === 401 &&
@@ -55,20 +57,6 @@ appAxios.interceptors.response.use(
 
         // Reload window so user is redirected to login
         window.location.reload();
-
-        return appAxios(originalConfig);
-      }
-
-      // Check for subscription expiry
-      if (
-        err.response.status === 500 &&
-        err.response.data?.message === 'Your subscription has expired.'
-      ) {
-        sendFeedback('Your subscription has expired', 'error');
-
-        // Redirect to subscription page
-        window.location.href = '/dashboard/account/?tab=2';
-        return appAxios(originalConfig);
       }
     }
     return Promise.reject(err);
